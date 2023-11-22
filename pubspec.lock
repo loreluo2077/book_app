@@ -285,10 +285,10 @@ packages:
     dependency: "direct main"
     description:
       name: file_picker
-      sha256: "28f1c95692761e7b582d83d40da61295d489f4be0a368b2746ed2cdfe87e7fef"
+      sha256: "903dd4ba13eae7cef64acc480e91bf54c3ddd23b5b90b639c170f3911e489620"
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "5.2.3"
+    version: "6.0.0"
   fixnum:
     dependency: transitive
     description:
@@ -1062,10 +1062,10 @@ packages:
     dependency: transitive
     description:
       name: win32
-      sha256: a6f0236dbda0f63aa9a25ad1ff9a9d8a4eaaa5012da0dc59d21afdb1dc361ca4
+      sha256: "350a11abd2d1d97e0cc7a28a81b781c08002aa2864d9e3f192ca0ffa18b06ed3"
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "3.1.4"
+    version: "5.0.9"
   woshilll_flutter_plugin:
     dependency: "direct main"
     description:

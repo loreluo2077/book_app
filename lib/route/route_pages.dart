@@ -9,29 +9,26 @@ import 'package:book_app/module/book/read/read_screen.dart';
 import 'package:book_app/route/routes.dart';
 import 'package:get/get.dart';
 
+import '../module/book/home/book_home.dart';
 
 class RoutePages {
   static const initial = Routes.splash;
   static final routes = [
     GetPage(
         name: Routes.bookHome,
-        page: () => const BookHomeScreen(),
-        binding: BookHomeBinding()
-    ),
+        page: () => BookHomeScreen(),
+        binding: BookHomeBinding()),
     GetPage(
         name: Routes.read,
         page: () => const ReadScreen(),
-        binding: ReadBinding()
-    ),
+        binding: ReadBinding()),
     GetPage(
         name: Routes.readSetting,
         page: () => const ReadSettingScreen(),
-        binding: ReadSettingBinding()
-    ),
+        binding: ReadSettingBinding()),
     GetPage(
         name: Routes.readMoreSetting,
         page: () => ReadMoreSettingScreen(),
-        binding: ReadMoreSettingBinding()
-    ),
+        binding: ReadMoreSettingBinding()),
   ];
 }

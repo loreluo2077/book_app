@@ -10,6 +10,7 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
 import 'custom_drawer.dart';
+
 class Drawer extends GetView<ReadController> {
   Drawer({Key? key}) : super(key: key);
   final ScrollController scrollController = ScrollController();
@@ -18,8 +19,13 @@ class Drawer extends GetView<ReadController> {
     return GetBuilder<ReadController>(
       id: "drawer",
       builder: (controller) {
-        Future.delayed(const Duration(milliseconds: 100), (){
-          scrollController.jumpTo(controller.pages.isEmpty ? 0 : (controller.chapters.indexWhere((element) => controller.pages[controller.pageIndex.count].chapterId == element.id)) * 41);
+        Future.delayed(const Duration(milliseconds: 100), () {
+          scrollController.jumpTo(controller.pages.isEmpty
+              ? 0
+              : (controller.chapters.indexWhere((element) =>
+                      controller.pages[controller.pageIndex.count].chapterId ==
+                      element.id)) *
+                  41);
         });
         return Container(
           width: MediaQuery.of(context).size.width * .7,
@@ -30,53 +36,51 @@ class Drawer extends GetView<ReadController> {
               Container(
                 height: 41,
                 alignment: Alignment.centerLeft,
-                margin:
-                const EdgeInsets.only(left: 15),
+                margin: const EdgeInsets.only(left: 15),
                 child: Text(
                   "共${controller.chapters.length}章",
-                  style:
-                  const TextStyle(fontSize: 14, color: Colors.grey),
+                  style: const TextStyle(fontSize: 14, color: Colors.grey),
                 ),
               ),
               MediaQuery.removePadding(
-                  context: context,
-                  child: Expanded(
+                context: context,
+                child: Expanded(
                     child: DraggableScrollbar.rrect(
-                    controller: scrollController,
-                    child: ListView.builder(
-                      itemBuilder:
-                          (context, index) {
-                        return InkWell(
-                          child: Container(
-                            padding:
-                            const EdgeInsets.only(left: 10, right: 20),
-                            alignment: Alignment.centerLeft,
-                            child: Text(
-                              "${controller.chapters[index]
-                                  .name}",
-                              maxLines: 2,
-                              style:
-                              controller.pages.isEmpty ? null : controller.pages[controller.pageIndex.count].chapterId ==
-                                  controller.chapters[index].id
-                                  ? const TextStyle(
-                                  color: Colors.lightBlue)
-                                  : const TextStyle(
-                                  color: Colors.grey),
-                            ),
+                  controller: scrollController,
+                  child: ListView.builder(
+                    itemBuilder: (context, index) {
+                      return InkWell(
+                        child: Container(
+                          padding: const EdgeInsets.only(left: 10, right: 20),
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            "${controller.chapters[index].name}",
+                            maxLines: 2,
+                            style: controller.pages.isEmpty
+                                ? null
+                                : controller.pages[controller.pageIndex.count]
+                                            .chapterId ==
+                                        controller.chapters[index].id
+                                    ? const TextStyle(color: Colors.lightBlue)
+                                    : const TextStyle(color: Colors.grey),
                           ),
-                          onTap: () async {
-                            ReadController controller = Get.find();
-                            await controller.jumpChapter(controller.chapters.indexWhere((element) => element.id == controller.chapters[index].id), pop: false, clearCount: true);
-                            controller.zoomDrawerController.toggle?.call();
-                          },
-                        );
-                      },
-                      itemCount: controller.chapters.length,
-                      controller: scrollController,
-                      itemExtent: 41,
-                    ),
-                  )
-              ),
+                        ),
+                        onTap: () async {
+                          ReadController controller = Get.find();
+                          await controller.jumpChapter(
+                              controller.chapters.indexWhere((element) =>
+                                  element.id == controller.chapters[index].id),
+                              pop: false,
+                              clearCount: true);
+                          controller.zoomDrawerController.toggle?.call();
+                        },
+                      );
+                    },
+                    itemCount: controller.chapters.length,
+                    controller: scrollController,
+                    itemExtent: 41,
+                  ),
+                )),
                 removeTop: true,
               )
             ],
