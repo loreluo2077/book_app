@@ -9,7 +9,7 @@ import 'package:book_app/module/book/read/read_screen.dart';
 import 'package:book_app/route/routes.dart';
 import 'package:get/get.dart';
 
-import '../module/book/home/book_home.dart';
+// import '../module/book/home/book_home.dart';
 
 class RoutePages {
   static const initial = Routes.splash;

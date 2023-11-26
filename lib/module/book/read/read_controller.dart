@@ -35,63 +35,79 @@ import 'package:book_app/util/system_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-enum ReadRefreshKey {
-  content,
-  page,
-  background
-}
+enum ReadRefreshKey { content, page, background }
 
 class ReadController extends GetxController {
   /// 数据库
   static final ChapterDbProvider _chapterDbProvider = ChapterDbProvider();
   static final BookDbProvider _bookDbProvider = BookDbProvider();
+
   /// 主页传来的书籍信息
   Book? book;
+
   /// 所有章节
   List<Chapter> chapters = [];
+
   /// 上下文
   BuildContext context = globalContext;
+
   /// 阅读的页
   List<ContentPage> pages = [];
+
   /// 当前阅读页索引
   CounterNotify pageIndex = CounterNotify();
+
   /// 页面监听
   PageController contentPageController = PageController();
+
   /// 阅读进度
   int readChapterIndex = 0;
+
   /// 底部类型 1-正常 2-亮度 3-设置
   String bottomType = "1";
+
   /// 屏幕亮度
   double brightness = 0;
+
   /// 背景色
   List<String> backgroundColors = ReadSettingConfig.getCommonBackgroundColors();
+
   /// 默认背景色
   ReadSettingConfig readSettingConfig = ReadSettingConfig.defaultConfig();
+
   /// 是否旋转屏幕
   bool rotateScreen = false;
+
   /// x轴移动距离
   double xMove = 0;
+
   /// 是否为暗色模式
   bool isDark = Get.isPlatformDarkMode;
+
   /// 自动翻页
   Timer? autoPage;
+
   /// 阅读方式
   ReadPageType readPageType = ReadPageType.slide;
+
   /// 小说页面生成
   late PageGen pageGen;
   ZoomDrawerController zoomDrawerController = ZoomDrawerController();
   bool loading = false;
   BookWithChapters? bookWithChapters;
+
   /// 页面是否在滑动中
   ObjectNotify<bool> isSliding = ObjectNotify(false);
+
   /// 是否需要更新文本
   bool _needUpdateContent = false;
   @override
-  void onInit() async{
+  void onInit() async {
     readPageType = getReadPageTypeByStr(SaveUtil.getString(Constant.readType));
     readSettingConfig = _getReadSettingConfig();
     if (isDark) {
-      readSettingConfig = ReadSettingConfig.defaultDarkConfig(readSettingConfig.fontSize, readSettingConfig.fontHeight);
+      readSettingConfig = ReadSettingConfig.defaultDarkConfig(
+          readSettingConfig.fontSize, readSettingConfig.fontHeight);
     }
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
     super.onInit();
@@ -104,21 +120,20 @@ class ReadController extends GetxController {
   }
 
   @override
-  onReady() async{
+  onReady() async {
     super.onReady();
     FutureDo.doAfterExecutor300(() {
-      initData()?.then(
-              (_) {
-                _refreshBookChapter(book!);
-              }
-      );
+      initData()?.then((_) {
+        _refreshBookChapter(book!);
+      });
     });
   }
 
-  initData() async{
+  initData() async {
     /// 亮度 放在前面
     brightness = await WoshilllFlutterPlugin.getBrightness();
     pageGen = PageGen(readSettingConfig);
+
     /// 加载章节
     chapters = await _chapterDbProvider.getChapters(null, book!.id);
     Chapter cur = chapters[0];
@@ -139,15 +154,21 @@ class ReadController extends GetxController {
     }
     return ReadSettingConfig.defaultConfig();
   }
+
   /// 将文本转文字页面
-  initPage(Chapter chapter, {bool firstInit = false, bool dialog = false, Function? finishFunc, bool canJumpPage = true}) async {
+  initPage(Chapter chapter,
+      {bool firstInit = false,
+      bool dialog = false,
+      Function? finishFunc,
+      bool canJumpPage = true}) async {
     loading = true;
     if (dialog) {
       Toast.toastL();
     }
-    pageGen.genPages(chapter, book!, (List<ContentPage> list) async{
+    pageGen.genPages(chapter, book!, (List<ContentPage> list) async {
       if (list.isNotEmpty && pages.isNotEmpty) {
-        int exist = pages.indexWhere((element) => element.chapterId == list[0].chapterId);
+        int exist = pages
+            .indexWhere((element) => element.chapterId == list[0].chapterId);
         if (exist == -1) {
           pages.addAll(list);
         }
@@ -158,7 +179,7 @@ class ReadController extends GetxController {
         finishFunc;
       }
       Toast.cancel();
-      if (canJumpPage){
+      if (canJumpPage) {
         if (firstInit && book!.curPage != null) {
           _jumpPageIndex(book!.curPage! - 1);
         } else if (pageIndex.count >= pages.length) {
@@ -178,18 +199,16 @@ class ReadController extends GetxController {
     });
   }
 
-
-
-
-
   /// 计算当前章节一共多少页
   calThisChapterTotalPage(index) {
     var chapterId = pages[index].chapterId;
-    return pages.lastIndexWhere((element) => element.chapterId == chapterId) - pages.indexWhere((element) =>  element.chapterId == chapterId) + 1;
+    return pages.lastIndexWhere((element) => element.chapterId == chapterId) -
+        pages.indexWhere((element) => element.chapterId == chapterId) +
+        1;
   }
 
   /// 页面变化监听
-  _pageChangeListen() async{
+  _pageChangeListen() async {
     if (loading) {
       return;
     }
@@ -204,7 +223,7 @@ class ReadController extends GetxController {
   }
 
   /// 页面返回监听
-  popRead() async{
+  popRead() async {
     Get.back();
     if (rotateScreen) {
       SystemChrome.setPreferredOrientations([
@@ -214,7 +233,7 @@ class ReadController extends GetxController {
   }
 
   /// 跳转章节
-  jumpChapter(index, {bool pop = true, bool clearCount = false}) async{
+  jumpChapter(index, {bool pop = true, bool clearCount = false}) async {
     loading = true;
     Chapter chapter = chapters[index];
     index = pages.indexWhere((element) => chapter.id == element.chapterId);
@@ -244,7 +263,8 @@ class ReadController extends GetxController {
     } else {
       // 到底了， 加载 获取当前章节
       var chapterId = pages[index].chapterId;
-      var chapterIndex = chapters.indexWhere((element) => element.id == chapterId);
+      var chapterIndex =
+          chapters.indexWhere((element) => element.id == chapterId);
       if (chapterIndex >= 0 && chapterIndex != chapters.length - 1) {
         // 找到下一章
         Chapter next = chapters[chapterIndex + 1];
@@ -262,7 +282,8 @@ class ReadController extends GetxController {
     } else {
       // 无上一页
       var chapterId = pages[index].chapterId;
-      var chapterIndex = chapters.indexWhere((element) => element.id == chapterId);
+      var chapterIndex =
+          chapters.indexWhere((element) => element.id == chapterId);
       if (chapterIndex > 0) {
         // 加载上一页
         Toast.toastL();
@@ -274,7 +295,6 @@ class ReadController extends GetxController {
           _prePageStyle();
           Toast.cancel();
         });
-
       }
     }
   }
@@ -292,7 +312,8 @@ class ReadController extends GetxController {
       return;
     }
     var chapterId = pages[pageIndex.count].chapterId;
-    readChapterIndex =  chapters.indexWhere((element) => chapterId == element.id);
+    readChapterIndex =
+        chapters.indexWhere((element) => chapterId == element.id);
   }
 
   void chapterChange(double value) {
@@ -300,12 +321,15 @@ class ReadController extends GetxController {
     update(["chapterChange"]);
   }
 
-  openDrawer() async{
+  openDrawer() async {
     zoomDrawerController.toggle?.call();
-    Future.delayed(const Duration(milliseconds: 400), () {update(["drawer"]);});
+    Future.delayed(const Duration(milliseconds: 400), () {
+      update(["drawer"]);
+    });
   }
+
   /// 上一章
-  preChapter() async{
+  preChapter() async {
     if (readChapterIndex <= 0) {
       Toast.toast(toast: "没有更多了");
       return;
@@ -316,7 +340,7 @@ class ReadController extends GetxController {
   }
 
   /// 下一章
-  nextChapter() async{
+  nextChapter() async {
     if (readChapterIndex >= chapters.length - 1) {
       Toast.toast(toast: "没有更多了");
       return;
@@ -335,7 +359,7 @@ class ReadController extends GetxController {
     update(["bottomType"]);
   }
 
-  setBrightness(double value) async{
+  setBrightness(double value) async {
     brightness = value;
     BookHomeController homeController = Get.find();
     homeController.onBrightness = brightness;
@@ -353,12 +377,19 @@ class ReadController extends GetxController {
     }
   }
 
-  toSetting() async{
-    ReadSettingConfig temp = ReadSettingConfig(readSettingConfig.backgroundColor, readSettingConfig.fontSize, readSettingConfig.fontColor, readSettingConfig.fontHeight, readSettingConfig.fontWeight);
-    var value = await Get.toNamed(Routes.readSetting, arguments: {"config": temp});
+  toSetting() async {
+    ReadSettingConfig temp = ReadSettingConfig(
+        readSettingConfig.backgroundColor,
+        readSettingConfig.fontSize,
+        readSettingConfig.fontColor,
+        readSettingConfig.fontHeight,
+        readSettingConfig.fontWeight);
+    var value =
+        await Get.toNamed(Routes.readSetting, arguments: {"config": temp});
     if (value != null && value["config"] != null) {
       ReadSettingConfig config = value["config"];
-      if (config.fontSize != readSettingConfig.fontSize || config.fontWeight != readSettingConfig.fontWeight) {
+      if (config.fontSize != readSettingConfig.fontSize ||
+          config.fontWeight != readSettingConfig.fontWeight) {
         // 需要重新加载
         readSettingConfig.fontSize = config.fontSize;
         readSettingConfig.fontWeight = config.fontWeight;
@@ -369,11 +400,12 @@ class ReadController extends GetxController {
     }
   }
 
-  _reload() async{
+  _reload() async {
     loading = true;
     Toast.toastL();
     pageGen.changeContentStyle(readSettingConfig);
-    int chapterIndex = chapters.indexWhere((element) => pages[pageIndex.count].chapterId == element.id);
+    int chapterIndex = chapters.indexWhere(
+        (element) => pages[pageIndex.count].chapterId == element.id);
     pageIndex.setCount(pages[pageIndex.count].index - 1);
     pages.clear();
     await jumpChapter(chapterIndex, pop: false);
@@ -382,7 +414,7 @@ class ReadController extends GetxController {
   }
 
   @override
-  void onClose() async{
+  void onClose() async {
     super.onClose();
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
     var config = _getReadSettingConfig();
@@ -402,17 +434,17 @@ class ReadController extends GetxController {
     isSliding.dispose();
   }
 
-
   /// 行高减0.1
-  fontHeightSub() async{
+  fontHeightSub() async {
     if (readSettingConfig.fontHeight > 1) {
       readSettingConfig.fontHeight = readSettingConfig.fontHeight - 0.1;
       await _reload();
       update([ReadRefreshKey.content]);
     }
   }
+
   /// 行高加0.1
-  fontHeightAdd() async{
+  fontHeightAdd() async {
     if (readSettingConfig.fontHeight < 3.5) {
       readSettingConfig.fontHeight = readSettingConfig.fontHeight + 0.1;
       await _reload();
@@ -421,7 +453,7 @@ class ReadController extends GetxController {
   }
 
   /// 屏幕旋转
-  rotateScreenChange() async{
+  rotateScreenChange() async {
     if (!rotateScreen) {
       rotateScreen = true;
       await SystemChrome.setPreferredOrientations([
@@ -440,9 +472,8 @@ class ReadController extends GetxController {
     update([ReadRefreshKey.page]);
   }
 
-
   /// 暗色主题
-  Future changeDark() async{
+  Future changeDark() async {
     if (isDark) {
       var config = _getReadSettingConfig();
       readSettingConfig.backgroundColor = config.backgroundColor;
@@ -452,7 +483,8 @@ class ReadController extends GetxController {
       isDark = false;
       update([ReadRefreshKey.content, "bottomType"]);
     } else {
-      readSettingConfig = ReadSettingConfig.defaultDarkConfig(readSettingConfig.fontSize, readSettingConfig.fontHeight);
+      readSettingConfig = ReadSettingConfig.defaultDarkConfig(
+          readSettingConfig.fontSize, readSettingConfig.fontHeight);
       update([ReadRefreshKey.background]);
       // await _reload(readSettingConfig);
       isDark = true;
@@ -469,7 +501,8 @@ class ReadController extends GetxController {
         if (autoPage != null) {
           autoPage!.cancel();
         }
-        autoPage = Timer.periodic(Duration(seconds: value["autoPageRate"]), (timer) async {
+        autoPage = Timer.periodic(Duration(seconds: value["autoPageRate"]),
+            (timer) async {
           await nextPage();
         });
         update(["autoPage"]);
@@ -489,10 +522,11 @@ class ReadController extends GetxController {
   }
 
   /// 重新加载章节
-  reloadPage() async{
+  reloadPage() async {
     Toast.toastL();
     var chapterId = pages[pageIndex.count].chapterId;
-    int firstIndex = pages.indexWhere((element) => chapterId == element.chapterId);
+    int firstIndex =
+        pages.indexWhere((element) => chapterId == element.chapterId);
     pages.removeWhere((element) => element.chapterId == chapterId);
     Chapter chapter = chapters.firstWhere((element) => element.id == chapterId);
     pageGen.genPages(chapter, book!, (list) {
@@ -503,12 +537,12 @@ class ReadController extends GetxController {
     Toast.cancel();
   }
 
-
   void _pageIndexChangeListen() {
     pageIndex.addListener(() {
       final index = pageIndex.count;
       if (index < pages.length) {
-        _bookDbProvider.updateCurChapter(book!.id, pages[index].chapterId, pages[index].index);
+        _bookDbProvider.updateCurChapter(
+            book!.id, pages[index].chapterId, pages[index].index);
       }
       if (index + 30 >= pages.length && pages.isNotEmpty) {
         _pageChangeListen();
@@ -526,7 +560,7 @@ class ReadController extends GetxController {
 
   /// 音量物理键变化
   void _volumeChangeListen() {
-    ChannelUtils.methodChannel.setMethodCallHandler((call) async{
+    ChannelUtils.methodChannel.setMethodCallHandler((call) async {
       switch (call.method) {
         case 'bookVolumeChange':
           var res = call.arguments;
@@ -538,13 +572,13 @@ class ReadController extends GetxController {
           break;
         case 'bookPath':
           BookHomeController homeController = Get.find();
-          homeController.parseBookWithShare(call);
+        // homeController.parseBookWithShare(call);
       }
     });
   }
 
   /// 重置设置
-  resetReadSetting() async{
+  resetReadSetting() async {
     if (isDark) {
       return;
     }
@@ -558,23 +592,30 @@ class ReadController extends GetxController {
       Toast.toast(toast: "本地章节无法重载");
       return;
     }
-    Get.dialog(
-      DialogBuild("重载章节", Text("该操作会重新从网络上下载该资源, 请确认", style: TextStyle(color: textColor()),), confirmFunction: () async{
+    Get.dialog(DialogBuild(
+      "重载章节",
+      Text(
+        "该操作会重新从网络上下载该资源, 请确认",
+        style: TextStyle(color: textColor()),
+      ),
+      confirmFunction: () async {
         Get.back();
         Toast.toastL(toast: "重载中...");
         var chapterId = pages[pageIndex.count].chapterId;
         var chapter = chapters.firstWhere((element) => element.id == chapterId);
-        Chapter? nextChapter = await _chapterDbProvider.getNextChapter(chapter.id, book!.id);
-        chapter.content = FontUtil.formatContent(await HtmlParseUtil.parseContent(chapter.name!, chapter.url!, nextChapter?.url));
+        Chapter? nextChapter =
+            await _chapterDbProvider.getNextChapter(chapter.id, book!.id);
+        chapter.content = FontUtil.formatContent(
+            await HtmlParseUtil.parseContent(
+                chapter.name!, chapter.url!, nextChapter?.url));
         await _chapterDbProvider.updateContent(chapter.id, chapter.content);
         reloadPage();
-      },)
-    );
-
+      },
+    ));
   }
 
   /// 下载数据
-  downloadBook(bool fromHead) async{
+  downloadBook(bool fromHead) async {
     if (book!.type != 1) {
       Toast.toast(toast: "本地章节无法缓存");
       return;
@@ -585,41 +626,45 @@ class ReadController extends GetxController {
       Toast.toast(toast: "已全部缓存");
       return;
     }
-    BookHomeController homeController = Get.find();
+    // BookHomeController homeController = Get.find();
     if (fromHead) {
-      homeController.downloadBook(book!.id!, chapters[0].id!);
+      // homeController.downloadBook(book!.id!, chapters[0].id!);
     } else {
-      homeController.downloadBook(book!.id!, pages[pageIndex.count].chapterId!);
+      // homeController.downloadBook(book!.id!, pages[pageIndex.count].chapterId!);
     }
   }
 
   getBookWithChapters() {
     BookHomeController homeController = Get.find();
-    bookWithChapters = homeController.getBookWithChapters(book!.id!);
+    // bookWithChapters = homeController.getBookWithChapters(book!.id!);
   }
 
   /// 导出为本地书籍
-  exportBook() async{
+  exportBook() async {
     String path = await PathUtil.getSavePath("books");
     Log.i("$path/${book!.name}.txt");
     File file = File("$path/${book!.name}.txt");
     if (file.existsSync()) {
       /// 已存在
-      Get.dialog(
-        DialogBuild("文件已存在", const Text("文件已存在, 是否覆盖?"), confirmFunction: () async{
+      Get.dialog(DialogBuild(
+        "文件已存在",
+        const Text("文件已存在, 是否覆盖?"),
+        confirmFunction: () async {
           Get.back();
           file.writeAsStringSync(await _createBookText());
           Toast.toast(toast: "已保存");
-        },)
-      );
+        },
+      ));
       return;
     }
     file.createSync();
     file.writeAsStringSync(await _createBookText());
     Toast.toast(toast: "已保存");
   }
-  Future<String> _createBookText() async{
-    List<Chapter> chaptersWithContent = await _chapterDbProvider.getChaptersWithContent(book!.id!);
+
+  Future<String> _createBookText() async {
+    List<Chapter> chaptersWithContent =
+        await _chapterDbProvider.getChaptersWithContent(book!.id!);
     List<String?> chapterStrList = [];
     for (var chapter in chaptersWithContent) {
       chapterStrList.add(chapter.name);
@@ -628,22 +673,22 @@ class ReadController extends GetxController {
     return chapterStrList.join("\n");
   }
 
-  _refreshBookChapter(Book book) async{
+  _refreshBookChapter(Book book) async {
     if (book.type != 1) {
       return;
     }
     var today = DateTime.now();
     if (book.updateTime != null) {
       var date = book.updateTime!.split("-");
-      if (date[0] == today.year.toString()
-          && date[1] == today.month.toString()
-          && date[2] == today.day.toString()
-      ) {
+      if (date[0] == today.year.toString() &&
+          date[1] == today.month.toString() &&
+          date[2] == today.day.toString()) {
         // 已经刷新
         return;
       }
     }
-    _bookDbProvider.updateTime(book.id, "${today.year}-${today.month}-${today.day}");
+    _bookDbProvider.updateTime(
+        book.id, "${today.year}-${today.month}-${today.day}");
     var oldList = await _chapterDbProvider.getChapters(null, book.id);
     var result = await HtmlParseUtil.parseChapter(book.url!);
     var newList = result[1];
@@ -674,7 +719,7 @@ class ReadController extends GetxController {
     if (home.autoBrightness) {
       if (Platform.isAndroid) {
         await WoshilllFlutterPlugin.setBrightnessDefault();
-      } else{
+      } else {
         await WoshilllFlutterPlugin.setBrightness(home.defaultBrightness);
       }
       brightness = await WoshilllFlutterPlugin.getBrightness();
@@ -682,11 +727,7 @@ class ReadController extends GetxController {
     update(["brightness"]);
   }
 
-  void initBrightness() async{
+  void initBrightness() async {
     brightness = await WoshilllFlutterPlugin.getBrightness();
   }
 }
-
-
-
-

@@ -4,13 +4,14 @@ import 'package:book_app/module/book/read/component/drawer.dart' as dr;
 import 'package:book_app/module/book/read/component/point.dart';
 import 'package:book_app/module/book/read/component/slide.dart';
 import 'package:book_app/module/book/read/read_controller.dart';
+import 'package:book_app/route/routes.dart';
 import 'package:book_app/theme/color.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_zoom_drawer/flutter_zoom_drawer.dart';
 import 'package:get/get.dart';
 
-class ReadScreen extends GetView<ReadController>{
+class ReadScreen extends GetView<ReadController> {
   const ReadScreen({Key? key}) : super(key: key);
 
   @override
@@ -24,8 +25,7 @@ class ReadScreen extends GetView<ReadController>{
           id: ReadRefreshKey.background,
           builder: (controller) {
             return Container(
-              color: hexToColor(
-                  controller.readSettingConfig.backgroundColor),
+              color: hexToColor(controller.readSettingConfig.backgroundColor),
               child: _body(context),
             );
           },
@@ -63,25 +63,25 @@ class ReadScreen extends GetView<ReadController>{
                 if (controller.readPageType == ReadPageType.point) {
                   await controller.prePage();
                 }
-              } else if (e.globalPosition.dx > (controller.pageGen.screenWidth / 3 * 2)) {
+              } else if (e.globalPosition.dx >
+                  (controller.pageGen.screenWidth / 3 * 2)) {
                 // if (!controller.loading) {
-                  if (controller.readPageType == ReadPageType.point) {
-                    await controller.nextPage();
-                  }
+                if (controller.readPageType == ReadPageType.point) {
+                  await controller.nextPage();
+                }
                 // }
               } else {
                 // 中间
-                // Get.toNamed(Routes.readBottom);
+                // bottom(context);
                 controller.initBrightness();
-                SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge).then((value) {
+                SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge)
+                    .then((value) {
                   bottom(context);
                 });
-
               }
             },
           );
-        }
-    );
+        });
   }
 
   _content() {
@@ -94,5 +94,4 @@ class ReadScreen extends GetView<ReadController>{
         return slide(scrollDirection: Axis.vertical);
     }
   }
-
 }

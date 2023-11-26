@@ -1,15 +1,15 @@
 import 'dart:async';
 
-import 'package:book_app/model/chapter/chapter.dart';
+// import 'package:book_app/model/chapter/chapter.dart';
 import 'package:book_app/module/book/read/read_controller.dart';
-import 'package:book_app/util/limit_util.dart';
-import 'package:book_app/util/no_shadow_scroll_behavior.dart';
+// import 'package:book_app/util/limit_util.dart';
+// import 'package:book_app/util/no_shadow_scroll_behavior.dart';
 import 'package:draggable_scrollbar/draggable_scrollbar.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+// import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
-import 'custom_drawer.dart';
+// import 'custom_drawer.dart';
 
 class Drawer extends GetView<ReadController> {
   Drawer({Key? key}) : super(key: key);
@@ -19,6 +19,7 @@ class Drawer extends GetView<ReadController> {
     return GetBuilder<ReadController>(
       id: "drawer",
       builder: (controller) {
+        //延迟100ms,跳转到当前章节
         Future.delayed(const Duration(milliseconds: 100), () {
           scrollController.jumpTo(controller.pages.isEmpty
               ? 0
