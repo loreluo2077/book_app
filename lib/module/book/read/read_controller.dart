@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:book_app/log/log.dart';
+// import 'package:book_app/log/log.dart';
 import 'package:book_app/mapper/book_db_provider.dart';
 import 'package:book_app/mapper/chapter_db_provider.dart';
 import 'package:book_app/model/book/book.dart';
@@ -24,7 +24,7 @@ import 'package:book_app/util/future_do.dart';
 import 'package:book_app/util/html_parse_util.dart';
 import 'package:book_app/util/notify/counter_notify.dart';
 import 'package:book_app/util/notify/object_notify.dart';
-import 'package:book_app/util/path_util.dart';
+// import 'package:book_app/util/path_util.dart';
 import 'package:book_app/util/save_util.dart';
 import 'package:book_app/util/toast.dart';
 import 'package:flutter/services.dart';
@@ -429,7 +429,7 @@ class ReadController extends GetxController {
     autoPage?.cancel();
     transparentBar();
     ChannelUtils.setConfig(Constant.pluginVolumeFlag, false);
-    SaveUtil.setString(Constant.readType, readPageType.name);
+    SaveUtil.setString(Constant.readType, readPageType);
     bookWithChapters?.dispose();
     isSliding.dispose();
   }
@@ -615,24 +615,24 @@ class ReadController extends GetxController {
   }
 
   /// 下载数据
-  downloadBook(bool fromHead) async {
-    if (book!.type != 1) {
-      Toast.toast(toast: "本地章节无法缓存");
-      return;
-    }
-    // 是否已全部缓存
-    int? count = await _chapterDbProvider.getUnCacheCount(book!.id!);
-    if (count == null || count == 0) {
-      Toast.toast(toast: "已全部缓存");
-      return;
-    }
-    // BookHomeController homeController = Get.find();
-    if (fromHead) {
-      // homeController.downloadBook(book!.id!, chapters[0].id!);
-    } else {
-      // homeController.downloadBook(book!.id!, pages[pageIndex.count].chapterId!);
-    }
-  }
+  // downloadBook(bool fromHead) async {
+  //   if (book!.type != 1) {
+  //     Toast.toast(toast: "本地章节无法缓存");
+  //     return;
+  //   }
+  //   // 是否已全部缓存
+  //   int? count = await _chapterDbProvider.getUnCacheCount(book!.id!);
+  //   if (count == null || count == 0) {
+  //     Toast.toast(toast: "已全部缓存");
+  //     return;
+  //   }
+  //   // BookHomeController homeController = Get.find();
+  //   if (fromHead) {
+  //     // homeController.downloadBook(book!.id!, chapters[0].id!);
+  //   } else {
+  //     // homeController.downloadBook(book!.id!, pages[pageIndex.count].chapterId!);
+  //   }
+  // }
 
   getBookWithChapters() {
     BookHomeController homeController = Get.find();
@@ -640,38 +640,38 @@ class ReadController extends GetxController {
   }
 
   /// 导出为本地书籍
-  exportBook() async {
-    String path = await PathUtil.getSavePath("books");
-    Log.i("$path/${book!.name}.txt");
-    File file = File("$path/${book!.name}.txt");
-    if (file.existsSync()) {
-      /// 已存在
-      Get.dialog(DialogBuild(
-        "文件已存在",
-        const Text("文件已存在, 是否覆盖?"),
-        confirmFunction: () async {
-          Get.back();
-          file.writeAsStringSync(await _createBookText());
-          Toast.toast(toast: "已保存");
-        },
-      ));
-      return;
-    }
-    file.createSync();
-    file.writeAsStringSync(await _createBookText());
-    Toast.toast(toast: "已保存");
-  }
+  // exportBook() async {
+  //   String path = await PathUtil.getSavePath("books");
+  //   Log.i("$path/${book!.name}.txt");
+  //   File file = File("$path/${book!.name}.txt");
+  //   if (file.existsSync()) {
+  //     /// 已存在
+  //     Get.dialog(DialogBuild(
+  //       "文件已存在",
+  //       const Text("文件已存在, 是否覆盖?"),
+  //       confirmFunction: () async {
+  //         Get.back();
+  //         file.writeAsStringSync(await _createBookText());
+  //         Toast.toast(toast: "已保存");
+  //       },
+  //     ));
+  //     return;
+  //   }
+  //   file.createSync();
+  //   file.writeAsStringSync(await _createBookText());
+  //   Toast.toast(toast: "已保存");
+  // }
 
-  Future<String> _createBookText() async {
-    List<Chapter> chaptersWithContent =
-        await _chapterDbProvider.getChaptersWithContent(book!.id!);
-    List<String?> chapterStrList = [];
-    for (var chapter in chaptersWithContent) {
-      chapterStrList.add(chapter.name);
-      chapterStrList.add(chapter.content);
-    }
-    return chapterStrList.join("\n");
-  }
+  // Future<String> _createBookText() async {
+  //   List<Chapter> chaptersWithContent =
+  //       await _chapterDbProvider.getChaptersWithContent(book!.id!);
+  //   List<String?> chapterStrList = [];
+  //   for (var chapter in chaptersWithContent) {
+  //     chapterStrList.add(chapter.name);
+  //     chapterStrList.add(chapter.content);
+  //   }
+  //   return chapterStrList.join("\n");
+  // }
 
   _refreshBookChapter(Book book) async {
     if (book.type != 1) {

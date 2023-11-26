@@ -2,7 +2,7 @@ import 'package:book_app/module/book/read/read_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import 'content.dart';
+// import 'content.dart';
 /// 覆盖
 Widget cover() {
   return GetBuilder<ReadController>(

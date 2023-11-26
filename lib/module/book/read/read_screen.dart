@@ -73,7 +73,7 @@ class ReadScreen extends GetView<ReadController> {
               } else {
                 // 中间
                 // bottom(context);
-                controller.initBrightness();
+                // controller.initBrightness();
                 SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge)
                     .then((value) {
                   bottom(context);

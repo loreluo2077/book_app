@@ -1,4 +1,4 @@
-import 'package:book_app/log/log.dart';
+// import 'package:book_app/log/log.dart';
 import 'package:book_app/model/book/book.dart';
 import 'package:book_app/model/chapter/chapter.dart';
 import 'package:book_app/module/book/read/component/content_gen.dart';
@@ -10,14 +10,13 @@ import 'package:flutter/material.dart';
 
 import 'content_page.dart';
 
-class PageGen{
+class PageGen {
   final TextPainter _painter = TextPainter(
       textAlign: TextAlign.start,
       textDirection: TextDirection.ltr,
       locale: WidgetsBinding.instance.window.locale,
       textScaleFactor: MediaQuery.of(globalContext).textScaleFactor,
-      textWidthBasis: TextWidthBasis.longestLine
-  );
+      textWidthBasis: TextWidthBasis.longestLine);
   late TextStyle _contentStyle;
   late double _screenWidth;
   late double _titleHeight;
@@ -28,9 +27,8 @@ class PageGen{
   final double _paddingWidth = 40;
   late double _screenLeft;
   late double _screenRight;
-  final TextStyle _titleStyle = const TextStyle(
-      fontSize: 25,
-      fontWeight: FontWeight.bold);
+  final TextStyle _titleStyle =
+      const TextStyle(fontSize: 25, fontWeight: FontWeight.bold);
 
   PageGen(ReadSettingConfig readSettingConfig) {
     _contentStyle = _readSettingConfigToTextStyle(readSettingConfig);
@@ -46,12 +44,12 @@ class PageGen{
         fontFamily: FontUtil.getFontFamily());
   }
 
-
-  Future<List<ContentPage>> genPages(Chapter chapter, Book book, Function(List<ContentPage>)? finishFunc) async{
+  Future<List<ContentPage>> genPages(Chapter chapter, Book book,
+      Function(List<ContentPage>)? finishFunc) async {
     _painter.strutStyle = StrutStyle(
-        forceStrutHeight: true,
-        fontSize: contentStyle.fontSize,
-        height: contentStyle.height,
+      forceStrutHeight: true,
+      fontSize: contentStyle.fontSize,
+      height: contentStyle.height,
     );
     await contentGen(chapter, book);
     List<ContentPage> list = await _genPages(chapter);
@@ -66,10 +64,11 @@ class PageGen{
     _calTitleHeight(chapter.name);
     _calWordHeightAndWidth();
     int maxLines = _calMaxLines(firstPage: true);
-    String content = chapter.content??"";
+    String content = chapter.content ?? "";
     if (content.isEmpty) {
-      list.add(
-          ContentPage("", 1, chapter.id, chapter.name, _contentWidth(), 0, _contentStyle, noContent: true));
+      list.add(ContentPage(
+          "", 1, chapter.id, chapter.name, _contentWidth(), 0, _contentStyle,
+          noContent: true));
       return list;
     }
     _painter.text = TextSpan(text: content, style: _contentStyle);
@@ -84,8 +83,8 @@ class PageGen{
     int i = 1;
     do {
       String subContent = content.substring(0, offset);
-      list.add(
-          ContentPage(subContent, i, chapter.id, chapter.name, _contentWidth(), paintHeight, _contentStyle));
+      list.add(ContentPage(subContent, i, chapter.id, chapter.name,
+          _contentWidth(), paintHeight, _contentStyle));
       i++;
       if (i == 2) {
         maxLines = _calMaxLines();
@@ -104,20 +103,15 @@ class PageGen{
       await Future.delayed(const Duration(microseconds: 200));
     } while (offset < content.characters.length && content.trim().isNotEmpty);
     if (offset > 0 && content.trim().isNotEmpty) {
-      list.add(
-          ContentPage(content, i, chapter.id, chapter.name, _contentWidth(), paintHeight, _contentStyle));
+      list.add(ContentPage(content, i, chapter.id, chapter.name,
+          _contentWidth(), paintHeight, _contentStyle));
     }
     return list;
   }
 
-
-
   changeContentStyle(ReadSettingConfig readSettingConfig) {
     _contentStyle = _readSettingConfigToTextStyle(readSettingConfig);
   }
-
-
-
 
   _calTitleHeight(String? title) {
     _painter.text = TextSpan(text: title, style: _titleStyle);
@@ -125,6 +119,7 @@ class PageGen{
     var cal = _painter.computeLineMetrics()[0];
     _titleHeight = cal.height;
   }
+
   double _contentWidth() {
     return _screenWidth - _paddingWidth - _screenLeft - _screenRight;
   }
@@ -156,14 +151,16 @@ class PageGen{
     if (firstPage) {
       extend = _titleHeight + _wordHeight;
     }
-    double _remainHeight = (_screenHeight -
-        _screenTop - _screenBottom - extend) %
-        _wordHeight;
+    double _remainHeight =
+        (_screenHeight - _screenTop - _screenBottom - extend) % _wordHeight;
     if (_remainHeight < (_wordHeight / 2)) {
       _remainHeight = _wordHeight / 2;
     }
     return (_screenHeight -
-        _screenTop - _screenBottom - extend - (_remainHeight ~/ 1)) ~/
+            _screenTop -
+            _screenBottom -
+            extend -
+            (_remainHeight ~/ 1)) ~/
         _wordHeight;
   }
 

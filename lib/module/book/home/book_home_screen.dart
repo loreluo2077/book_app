@@ -5,6 +5,7 @@ import 'package:book_app/util/future_do.dart';
 import 'package:book_app/util/system_utils.dart';
 import 'package:book_app/util/toast.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:book_app/model/book/book.dart';
 
@@ -107,9 +108,7 @@ class BookHomeScreen extends GetView<BookHomeController> {
             },
           ),
         ),
-        const SizedBox(
-          height: 16,
-        ),
+        SizedBox(height: 16),
       ],
     );
   }
