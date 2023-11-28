@@ -429,7 +429,7 @@ class ReadController extends GetxController {
     autoPage?.cancel();
     transparentBar();
     ChannelUtils.setConfig(Constant.pluginVolumeFlag, false);
-    SaveUtil.setString(Constant.readType, readPageType);
+    SaveUtil.setString(Constant.readType, readPageType.toString());
     bookWithChapters?.dispose();
     isSliding.dispose();
   }

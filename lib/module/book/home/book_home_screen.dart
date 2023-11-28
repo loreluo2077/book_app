@@ -1,13 +1,18 @@
 import 'package:book_app/module/book/home/book_home_controller.dart';
 import 'package:book_app/util/bottom_bar_build.dart';
 import 'package:book_app/util/dialog_build.dart';
+import 'package:book_app/util/ex_list.dart';
+import 'package:book_app/util/ex_widget.dart';
 import 'package:book_app/util/future_do.dart';
 import 'package:book_app/util/system_utils.dart';
 import 'package:book_app/util/toast.dart';
+import 'package:book_app/widget/text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:book_app/model/book/book.dart';
+
+import '../../../widget/icon.dart';
 
 class BookHomeScreen extends GetView<BookHomeController> {
   const BookHomeScreen({Key? key}) : super(key: key);
@@ -45,30 +50,23 @@ class BookHomeScreen extends GetView<BookHomeController> {
 
   Widget _buildBookCard(Book localBook) {
     return Card(
-      child: InkWell(
-        onTap: () {
-          FutureDo.doAfterExecutor300(() => controller.getBookInfo(localBook),
-              preExecutor: () => Get.back());
-        },
-        onLongPress: () {
-          _longPressBook(localBook);
-        },
-        child: Container(
-          alignment: Alignment.center,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Icon(Icons.book, size: 50),
-              Text(
-                localBook.name!,
-                overflow: TextOverflow.ellipsis,
-                maxLines: 3,
-              ), // The book count can be dynamic
-            ],
-          ),
-        ),
+            child: <Widget>[
+      IconWidget.icon(
+        Icons.book,
+        size: 50,
       ),
-    );
+      TextWidget(
+        text: localBook.name!,
+        overflow: TextOverflow.ellipsis,
+        maxLines: 3,
+      )
+    ].toColumn(mainAxisAlignment: MainAxisAlignment.center))
+        .onTap(() {
+      FutureDo.doAfterExecutor300(() => controller.getBookInfo(localBook),
+          preExecutor: () => Get.back());
+    }).onLongPress(() {
+      _longPressBook(localBook);
+    });
   }
 
   Widget _body(context) {
@@ -85,30 +83,27 @@ class BookHomeScreen extends GetView<BookHomeController> {
             id: 'bookList',
             builder: (controller) {
               int count = controller.localBooks.length;
-              return Container(
-                margin: const EdgeInsets.only(left: 25, right: 25, top: 15),
-                child: GridView.builder(
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 3,
-                            crossAxisSpacing: 40,
-                            mainAxisSpacing: 5,
-                            childAspectRatio: .65),
-                    itemCount: count + 1,
-                    itemBuilder: (context, index) {
-                      if (index < count) {
-                        // Return book card
-                        return _buildBookCard(controller.localBooks[index]);
-                      } else {
-                        // Return add book card
-                        return _addBookWidget(context);
-                      }
-                    }),
-              );
+              return GridView.builder(
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 3,
+                      crossAxisSpacing: 40,
+                      mainAxisSpacing: 5,
+                      childAspectRatio: .65),
+                  itemCount: count + 1,
+                  itemBuilder: (context, index) {
+                    if (index < count) {
+                      // Return book card
+                      return _buildBookCard(controller.localBooks[index]);
+                    } else {
+                      // Return add book card
+                      return _addBookWidget(context);
+                    }
+                  }).marginSymmetric(horizontal: 25, vertical: 15);
+              // );
             },
           ),
         ),
-        SizedBox(height: 16),
+        const SizedBox(height: 16),
       ],
     );
   }
@@ -116,28 +111,13 @@ class BookHomeScreen extends GetView<BookHomeController> {
   Widget _addBookWidget(context) {
     return Column(
       children: [
-        Expanded(
-          child: Card(
-            color: Colors.grey[200],
-            child: InkWell(
-              borderRadius: BorderRadius.circular(4),
-              child: Container(
-                alignment: Alignment.center,
-                child: Icon(
-                  Icons.add,
-                  color: Colors.black54,
-                  size: 45,
-                ),
-                decoration: const BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(4)),
-                ),
-              ),
-              onTap: () {
-                _showSelect();
-              },
-            ),
-          ),
-        ),
+        IconWidget.icon(
+          Icons.add,
+          size: 45,
+          color: Colors.black54,
+        ).center().card(color: Colors.grey[200]).onTap(() {
+          _showSelect();
+        }).expanded()
       ],
     );
   }
@@ -154,7 +134,7 @@ class BookHomeScreen extends GetView<BookHomeController> {
                     style: const TextStyle(color: Colors.redAccent)),
                 const TextSpan(text: "吗?")
               ],
-              style: TextStyle(color: Colors.black45)),
+              style: const TextStyle(color: Colors.black45)),
         ), confirmFunction: () async {
       controller.deleteBook(book);
       Get.back();
@@ -222,8 +202,8 @@ class BookHomeScreen extends GetView<BookHomeController> {
             Get.back();
             Get.dialog(DialogBuild(
                 "如何使用?",
-                Text.rich(
-                  TextSpan(children: const [
+                const Text.rich(
+                  TextSpan(children: [
                     TextSpan(
                       text: "1. 本地导入，选择对应的txt文件即可导入，文件中需包含第x章，否则可能无法导入成功\n\n",
                     ),

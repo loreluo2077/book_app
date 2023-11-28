@@ -39,44 +39,29 @@ bottom(context) async {
 }
 
 Widget _buildHead(context, controller) {
-  return Container(
-    height: 56 + MediaQuery.of(context).padding.top,
-    padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
-    color: Colors.black,
-    child: Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        GestureDetector(
-          child: Container(
-            margin: const EdgeInsets.only(left: 15),
-            alignment: Alignment.centerLeft,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                GestureDetector(
-                  child: const Icon(
-                    Icons.arrow_back_ios,
-                    size: 25,
-                    color: Colors.white,
-                  ),
-                  onTap: () {
-                    Navigator.of(context).pop();
-                    controller.popRead();
-                  },
-                ),
-                Container(
-                  margin: const EdgeInsets.only(left: 15),
-                  child: Text(
-                    "${controller.book!.name!.length > 10 ? controller.book!.name!.substring(0, 10) : controller.book!.name}",
-                    style: const TextStyle(color: Colors.white, fontSize: 16),
-                  ),
-                )
-              ],
-            ),
-          ),
-        ),
-      ],
+  // final double statusBarHeight = MediaQuery.of(context).padding.top;
+  final String bookName = controller.book!.name!.length > 10
+      ? controller.book!.name!.substring(0, 10)
+      : controller.book!.name;
+  return AppBar(
+    backgroundColor: Colors.black,
+    leading: IconButton(
+      icon: const Icon(
+        Icons.arrow_back_ios,
+        size: 25,
+        color: Colors.white,
+      ),
+      onPressed: () {
+        Navigator.of(context).pop();
+        controller.popRead();
+      },
+    ),
+    title: Align(
+      alignment: Alignment.centerLeft,
+      child: Text(
+        bookName,
+        style: const TextStyle(color: Colors.white, fontSize: 16),
+      ),
     ),
   );
 }
